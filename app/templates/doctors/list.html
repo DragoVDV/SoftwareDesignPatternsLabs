@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Лікарі — Реєстратура{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="bi bi-person-badge me-2 text-primary"></i>Лікарі</h2>
+    <a href="/doctors/create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Додати лікаря
+    </a>
+</div>
+
+{% if doctors %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for doctor in doctors %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-person-circle fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-0">{{ doctor.last_name }} {{ doctor.first_name }}</h5>
+                        <small class="text-muted">ID: {{ doctor.id }}</small>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-info text-dark">
+                        <i class="bi bi-heart-pulse me-1"></i>{{ doctor.specialization }}
+                    </span>
+                </div>
+                {% if doctor.phone %}
+                <p class="card-text text-muted small mb-0">
+                    <i class="bi bi-telephone me-1"></i>{{ doctor.phone }}
+                </p>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent">
+                <form method="post" action="/doctors/{{ doctor.id }}/delete" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('Видалити лікаря {{ doctor.last_name }} {{ doctor.first_name }}?')">
+                        <i class="bi bi-trash me-1"></i>Видалити
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info d-flex align-items-center">
+    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+    <div>
+        Список лікарів порожній. <a href="/doctors/create">Додайте першого лікаря</a>.
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

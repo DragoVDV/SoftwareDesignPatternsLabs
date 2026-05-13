@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}{{ patient.last_name }} {{ patient.first_name }} — Реєстратура{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/patients/">Пацієнти</a></li>
+        <li class="breadcrumb-item active">{{ patient.last_name }} {{ patient.first_name }}</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+
+    <!-- Patient card -->
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-person-circle me-2"></i>Картка пацієнта</h6>
+                <a href="/patients/{{ patient.id }}/edit" class="btn btn-sm btn-light" title="Редагувати">
+                    <i class="bi bi-pencil"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <h4 class="mb-3">{{ patient.last_name }}<br>{{ patient.first_name }}</h4>
+                <table class="table table-sm table-borderless mb-0">
+                    <tr>
+                        <td class="text-muted pe-2"><i class="bi bi-calendar3 me-1"></i>Нар.:</td>
+                        <td>{{ patient.date_of_birth.strftime('%d.%m.%Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted pe-2"><i class="bi bi-telephone me-1"></i>Тел.:</td>
+                        <td>{{ patient.phone or '—' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted pe-2"><i class="bi bi-envelope me-1"></i>Email:</td>
+                        <td>{{ patient.email or '—' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted pe-2"><i class="bi bi-geo-alt me-1"></i>Адреса:</td>
+                        <td>{{ patient.address or '—' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted pe-2"><i class="bi bi-clock-history me-1"></i>Рег.:</td>
+                        <td>{{ patient.created_at.strftime('%d.%m.%Y') }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-footer d-flex gap-2">
+                <form method="post" action="/patients/{{ patient.id }}/delete" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('Видалити пацієнта {{ patient.last_name }} {{ patient.first_name }}? Усі прийоми також будуть видалені.')">
+                        <i class="bi bi-trash me-1"></i>Видалити
+                    </button>
+                </form>
+                <a href="/patients/" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Назад
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments -->
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">
+                <i class="bi bi-calendar-check me-2 text-primary"></i>Прийоми
+                <span class="badge bg-secondary ms-1">{{ appointments|length }}</span>
+            </h5>
+            <a href="/appointments/create?patient_id={{ patient.id }}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Записати на прийом
+            </a>
+        </div>
+
+        {% if appointments %}
+            {% for appt in appointments %}
+            <div class="card mb-3 shadow-sm border-start border-4
+                {% if appt.status.value == 'completed' %}border-success
+                {% elif appt.status.value == 'scheduled' %}border-warning
+                {% else %}border-secondary{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="fw-semibold mb-1">
+                                <i class="bi bi-person-badge me-1 text-primary"></i>
+                                {{ appt.doctor.last_name }} {{ appt.doctor.first_name }}
+                                <span class="text-muted fw-normal">— {{ appt.doctor.specialization }}</span>
+                            </div>
+                            <div class="text-muted small mb-2">
+                                <i class="bi bi-clock me-1"></i>{{ appt.appointment_date.strftime('%d.%m.%Y о %H:%M') }}
+                            </div>
+                            {% if appt.diagnosis %}
+                            <div class="mb-1">
+                                <span class="text-muted small">Діагноз:</span>
+                                <strong>{{ appt.diagnosis }}</strong>
+                            </div>
+                            {% endif %}
+                            {% if appt.notes %}
+                            <div class="text-muted small">{{ appt.notes }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="text-end ms-3">
+                            <span class="badge
+                                {% if appt.status.value == 'completed' %}bg-success
+                                {% elif appt.status.value == 'scheduled' %}bg-warning text-dark
+                                {% else %}bg-secondary{% endif %} mb-2 d-block">
+                                {% if appt.status.value == 'completed' %}Завершено
+                                {% elif appt.status.value == 'scheduled' %}Заплановано
+                                {% else %}Скасовано{% endif %}
+                            </span>
+                            <form method="post" action="/appointments/{{ appt.id }}/delete" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Видалити цей прийом?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {% if appt.status.value == 'scheduled' %}
+                    <form method="post" action="/appointments/{{ appt.id }}/update-status"
+                          class="mt-3 pt-3 border-top">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-sm-5">
+                                <label class="form-label form-label-sm text-muted">Діагноз</label>
+                                <input type="text" class="form-control form-control-sm" name="diagnosis"
+                                       placeholder="Введіть діагноз...">
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label form-label-sm text-muted">Статус</label>
+                                <select class="form-select form-select-sm" name="status">
+                                    <option value="completed">Завершити прийом</option>
+                                    <option value="cancelled">Скасувати</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="submit" class="btn btn-sm btn-primary w-100">
+                                    Оновити
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="alert alert-light border">
+            <i class="bi bi-info-circle me-2 text-muted"></i>
+            Прийомів ще не було. <a href="/appointments/create?patient_id={{ patient.id }}">Записати на прийом</a>.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

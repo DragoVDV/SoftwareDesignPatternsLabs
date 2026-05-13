@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Записати на прийом — Реєстратура{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/appointments/">Прийоми</a></li>
+                <li class="breadcrumb-item active">Записати на прийом</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-plus me-2"></i>Новий запис на прийом</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/appointments/create">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Пацієнт <span class="text-danger">*</span></label>
+                        <select class="form-select" name="patient_id" required>
+                            <option value="">— Оберіть пацієнта —</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}"
+                                {% if selected_patient_id == patient.id %}selected{% endif %}>
+                                {{ patient.last_name }} {{ patient.first_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Лікар <span class="text-danger">*</span></label>
+                        <select class="form-select" name="doctor_id" required>
+                            <option value="">— Оберіть лікаря —</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">
+                                {{ doctor.last_name }} {{ doctor.first_name }} — {{ doctor.specialization }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Дата та час прийому <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" name="appointment_date" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Скарги / примітки</label>
+                        <textarea class="form-control" name="notes" rows="3"
+                                  placeholder="Опишіть скарги пацієнта..."></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-lg me-1"></i>Записати
+                        </button>
+                        <a href="/patients/" class="btn btn-outline-secondary">Скасувати</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
