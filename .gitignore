@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Data output
+data/
+
+# Firebase credentials
+firebase-key.json
+
+# DB
+*.db
+
+# IDE
+.vscode/
+.idea/
+
+# mypy
+.mypy_cache/
+
+# Env
+.env

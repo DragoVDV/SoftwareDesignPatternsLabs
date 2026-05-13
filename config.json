@@ -1,0 +1,12 @@
+{
+    "output_strategy": "redis",
+    "kafka": {
+        "bootstrap_servers": "localhost:9092",
+        "topic": "sf_cases"
+    },
+    "redis": {
+        "host": "localhost",
+        "port": 6380,
+        "key_prefix": "case:"
+    }
+}
