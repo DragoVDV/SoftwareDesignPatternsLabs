@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Редагувати пацієнта — Реєстратура{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/patients/">Пацієнти</a></li>
+                <li class="breadcrumb-item"><a href="/patients/{{ patient.id }}">{{ patient.last_name }} {{ patient.first_name }}</a></li>
+                <li class="breadcrumb-item active">Редагувати</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Редагувати дані пацієнта</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/patients/{{ patient.id }}/edit">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Ім'я <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="first_name"
+                                   value="{{ patient.first_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Прізвище <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="last_name"
+                                   value="{{ patient.last_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Дата народження <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="date_of_birth"
+                                   value="{{ patient.date_of_birth }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Телефон</label>
+                            <input type="tel" class="form-control" name="phone"
+                                   value="{{ patient.phone or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="email" class="form-control" name="email"
+                                   value="{{ patient.email or '' }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Адреса проживання</label>
+                            <input type="text" class="form-control" name="address"
+                                   value="{{ patient.address or '' }}">
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning px-4">
+                            <i class="bi bi-check-lg me-1"></i>Зберегти зміни
+                        </button>
+                        <a href="/patients/{{ patient.id }}" class="btn btn-outline-secondary">Скасувати</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

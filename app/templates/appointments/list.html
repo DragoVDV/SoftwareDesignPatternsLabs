@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Усі прийоми — Реєстратура{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="bi bi-calendar-check me-2 text-primary"></i>Усі прийоми</h2>
+    <a href="/appointments/create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Новий прийом
+    </a>
+</div>
+
+{% if appointments %}
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-3">#</th>
+                    <th>Пацієнт</th>
+                    <th>Лікар</th>
+                    <th>Дата та час</th>
+                    <th>Діагноз</th>
+                    <th>Статус</th>
+                    <th class="text-center">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td class="ps-3 text-muted">{{ appt.id }}</td>
+                    <td>
+                        <a href="/patients/{{ appt.patient_id }}" class="text-decoration-none fw-semibold">
+                            {{ appt.patient.last_name }} {{ appt.patient.first_name }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ appt.doctor.last_name }} {{ appt.doctor.first_name }}
+                        <br>
+                        <small class="text-muted">{{ appt.doctor.specialization }}</small>
+                    </td>
+                    <td>{{ appt.appointment_date.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>{{ appt.diagnosis or '—' }}</td>
+                    <td>
+                        <span class="badge
+                            {% if appt.status.value == 'completed' %}bg-success
+                            {% elif appt.status.value == 'scheduled' %}bg-warning text-dark
+                            {% else %}bg-secondary{% endif %}">
+                            {% if appt.status.value == 'completed' %}Завершено
+                            {% elif appt.status.value == 'scheduled' %}Заплановано
+                            {% else %}Скасовано{% endif %}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <form method="post" action="/appointments/{{ appt.id }}/delete" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Видалити прийом #{{ appt.id }}?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer text-muted small">
+        Всього прийомів: {{ appointments|length }}
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info d-flex align-items-center">
+    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+    <div>Прийомів ще немає. <a href="/appointments/create">Створіть перший прийом</a>.</div>
+</div>
+{% endif %}
+
+{% endblock %}
