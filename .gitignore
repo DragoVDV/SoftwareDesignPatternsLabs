@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Mypy
+.mypy_cache/
+
+# Data files
+data/data.csv
+
+# OS
+.DS_Store
+Thumbs.db

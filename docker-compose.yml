@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: edx
+      POSTGRES_PASSWORD: edx
+      POSTGRES_DB: edx
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - 5434:5432
+    expose:
+      - "5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data:cached
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U edx -d edx"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://edx:edx@postgres:5432/edx
+      CSV_FILE_PATH: data/data.csv
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./data:/code/data
+
+volumes:
+  db-data:
